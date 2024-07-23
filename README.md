@@ -14,6 +14,10 @@
     - [Task 2: Connect to EC2 instance](#task-2-connect-to-ec2-instance)
     - [Task 3: Set up Kafka on the EC2 instance](#task-3-set-up-kafka-on-the-ec2-instance)
     - [Task 4: Create Kafka topipcs](#task-4-create-kafka-topipcs)
+5. [Milestone 4: Batch Processing: Connnect a MSK cluster to a S3 bucket](#milestone-4-batch-processing-connnect-a-msk-cluster-to-a-s3-bucket)
+    - [Task 1: Create a custom plugin with MSK Connect](#task-1-create-a-custom-plugin-with-msk-connect)
+    - [Task 2: Create a connector with MSK Connect](#task-2-create-a-connector-with-msk-connect)
+
 
 
 
@@ -161,3 +165,49 @@ Once the **CLASSPATH** has been set properly, you can start creating the followi
 - **<your_UserId>**.user for the post user data
 
 Where **<your_UserId>** should be replaced with the **BootstrapServerString** with the value you have obtained in the previous step.
+
+## Milestone 4: Batch Processing: Connnect a MSK cluster to a S3 bucket
+
+In this milestone, we proceed to set up the connection between **MSK cluster** and **S3 bucket** by using **MSK Connect** in order to make that all data going through the cluster will be automatically saved and stored in a dedicated **S3 buccket**
+
+### Task 1: Create a custom plugin with MSK Connect
+
+In this task we will create a custom plugin that will contain the code that defines the logic of our connector by following the steps described below.
+
+1. Go to the S3 console and find the bucket that contains your UserId. The bucket name should have the following format: user-<your_UserId>-bucket. Make a note of the bucket name, as you will need it in the next steps.
+![All text](https://github.com/acq3047/pinterest-data-pipeline708/blob/main/images/Plugin_ZIP.png)
+2. On your EC2 client, download the Confluent.io Amazon S3 Connector and copy it to the S3 bucket you have identified in the previous step.
+
+`wget https://d2p6pa21dvn84.cloudfront.net/api/plugins/confluentinc/kafka-connect-s3/versions/10.5.13/confluentinc-kafka-connect-s3-10.5.13.zip`
+
+`aws s3 cp ./confluentinc-kafka-connect-s3-10.5.13.zip s3://user-0affd5f86743-bucket/kafka-connect-s3/ `
+
+3. Create your custom plugin in the MSK Connect console. For this project your AWS account only has permissions to create a custom plugin with the following name: <your_UserId>-plugin. Make sure to use this name when creating your plugin.
+
+### Task 2: Create a connector with MSK Connect
+
+In this task, we proceed to create a connector with MSK Connect by following the following steps:
+
+1. For this project your AWS account only has permissions to create a connector with the following name: <your_UserId>-connector. Make sure to use this name when creating your connector.
+2. Make sure to use the correct configurations for your connector, specifically your bucket name should be user-<your_UserId>-bucket.
+3. You should also pay attention to the topics.regex field in the connector configuration. Make sure it has the following structure: <your_UserId>.*. This will ensure that data going through all the three previously created Kafka topics will get saved to the S3 bucket.
+```python
+connector.class=io.confluent.connect.s3.S3SinkConnector
+# same region as our bucket and cluster
+s3.region=us-east-1
+flush.size=1
+schema.compatibility=NONE
+tasks.max=3
+# include nomeclature of topic name, given here as an example will read all data from topic names starting with msk.topic....
+topics.regex=<YOUR_UUID>.*
+format.class=io.confluent.connect.s3.format.json.JsonFormat
+partitioner.class=io.confluent.connect.storage.partitioner.DefaultPartitioner
+value.converter.schemas.enable=false
+value.converter=org.apache.kafka.connect.json.JsonConverter
+storage.class=io.confluent.connect.s3.storage.S3Storage
+key.converter=org.apache.kafka.connect.storage.StringConverter
+s3.bucket.name=<BUCKET_NAME>
+```
+4. When building the connector, make sure to choose the IAM role used for authentication to the MSK cluster in the Access permissions tab. Remember the role has the following format <your_UserId>-ec2-access-role. This is the same role you have previously used for authentication on your EC2 client, and contains all the necessary permissions to connect to both MSK and MSK Connect.
+
+Now that you have built the plugin-connector pair, data passing through the IAM authenticated cluster, will be automatically stored in the designated S3 bucket.
