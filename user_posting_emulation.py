@@ -38,20 +38,22 @@ def json_serial(obj):
         return obj.isoformat()
     raise TypeError(f"Type {type(obj)} not serializable")
 
-def post_to_kafka(topic, data):
-    url = f"{API_INVOKE_URL}/{topic}"
+def post_to_kafka(data):
+    url = f"{API_INVOKE_URL}"
+    print(url)
     headers = {
         "Content-Type": "application/json"
     }
     try:
         response = requests.post(url, headers=headers, data=json.dumps(data, default=json_serial))
         if response.status_code != 200:
-            print(f"Failed to post to {topic}: {response.text}")
+            # print(f"Failed to post to {topic}: {response.text}")
             print(f"The status code is: {response.status_code}")
         else:
             print(f"The status code is: {response.status_code}")
     except Exception as e:
-        print(f"Error posting to {topic}: {e}")
+        # print(f"Error posting to {topic}: {e}")
+        print('Error has occured')
 
 def run_infinite_post_data_loop():
     while True:
@@ -64,10 +66,11 @@ def run_infinite_post_data_loop():
             pin_string = text(f"SELECT * FROM pinterest_data LIMIT {random_row}, 1")
             pin_selected_row = connection.execute(pin_string)
             
+        
+
             for row in pin_selected_row:
                 pin_result = dict(row._mapping)
-                post_to_kafka("pinterest_topic", pin_result)
-                print(f"Posted to pinterest_topic: {pin_result}")
+
 
 
             geo_string = text(f"SELECT * FROM geolocation_data LIMIT {random_row}, 1")
@@ -75,8 +78,8 @@ def run_infinite_post_data_loop():
             
             for row in geo_selected_row:
                 geo_result = dict(row._mapping)
-                post_to_kafka("geolocation_topic", geo_result)
-                print(f"Posted to geolocation_topic: {geo_result}")
+                # post_to_kafka(geo_result)
+                # print(f"Posted to geolocation_topic: {geo_result}")
 
 
             user_string = text(f"SELECT * FROM user_data LIMIT {random_row}, 1")
@@ -84,12 +87,28 @@ def run_infinite_post_data_loop():
             
             for row in user_selected_row:
                 user_result = dict(row._mapping)
-                post_to_kafka("user_topic", user_result)
-                print(f"Posted to user_topic: {user_result}")
+                # post_to_kafka(user_result)
+                # print(f"Posted to user_topic: {user_result}")
             
             print(pin_result)
-            print(geo_result)
-            print(user_result)
+            # print(geo_result)
+            # print(user_result)
+
+            pin_res = json.dumps({
+                "records": [
+                    {
+                    "value": pin_result
+                    }
+                ]
+            }, default=str)
+            # post_to_kafka( pin_result)
+            # print(f"Posted to pinterest_topic: {pin_result}")
+
+        
+            headers = {'Content-Type': 'application/vnd.kafka.json.v2+json'}
+            
+            pin_response = requests.request("POST", "https://5tqlmnjg51.execute-api.us-east-1.amazonaws.com/dev/topics/0affd5f86743.pin", headers=headers, data=pin_res)
+            print(pin_response.status_code)
 
 
 if __name__ == "__main__":
@@ -97,5 +116,8 @@ if __name__ == "__main__":
     print('Working')
     
     
+
+
+
 
 
