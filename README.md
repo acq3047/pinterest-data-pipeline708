@@ -17,6 +17,10 @@
 5. [Milestone 4: Batch Processing: Connnect a MSK cluster to a S3 bucket](#milestone-4-batch-processing-connnect-a-msk-cluster-to-a-s3-bucket)
     - [Task 1: Create a custom plugin with MSK Connect](#task-1-create-a-custom-plugin-with-msk-connect)
     - [Task 2: Create a connector with MSK Connect](#task-2-create-a-connector-with-msk-connect)
+6. [Milestone 5: Batch Processing: Configuring an API in API Gateway](#milestone-5-batch-processing-configuring-an-api-in-api-gateway)
+    - [Task 1: Build a Kafka REST proxy integration method for the API](#task-1-build-a-kafka-rest-proxy-integration-method-for-the-api)
+    - [Task 2: Set up the Kafka REST proxy on the EC2 client](#task-2-set-up-the-kafka-rest-proxy-on-the-ec2-client)
+    - [Task 3: Send data to the API](#task-3-send-data-to-the-api)
 
 
 
@@ -211,3 +215,63 @@ s3.bucket.name=<BUCKET_NAME>
 4. When building the connector, make sure to choose the IAM role used for authentication to the MSK cluster in the Access permissions tab. Remember the role has the following format <your_UserId>-ec2-access-role. This is the same role you have previously used for authentication on your EC2 client, and contains all the necessary permissions to connect to both MSK and MSK Connect.
 
 Now that you have built the plugin-connector pair, data passing through the IAM authenticated cluster, will be automatically stored in the designated S3 bucket.
+
+## Milestone 5: Batch Processing: Configuring an API in API Gateway
+
+To replicate the Pinterest's experimental data pipeline, you will have to build your own API. This API will send data to the MSK cluster, which in turn will be stored in an S3 bucket by using the connector created in the previous milestone.
+
+### Task 1: Build a Kafka REST proxy integration method for the API
+
+For this task you will not need to create your own **API**, as you have been provided with one already. The API name will be the same as your **UserId**.
+
+1. Create a resource that allows you to build a PROXY integration for your API. To do it, you have to click on Create resource button. Select the Proxy resource toogle. For Resource Name enter **{proxy+}**. Finally, select Enable API Gateway CORS and choose Create Resource.
+
+2. For the previously created resource, create a HTTP **ANY** method. When setting up the **Endpoint URL**, make sure to copy the correct **PublicDNS**, from the EC2 machine you have been working on in the previous milestones. Remember, this EC2 should have the same name as your UserId.
+
+3. Deploy the API and make a note of the Invoke URL, as you will need it in a later task.
+
+### Task 2: Set up the Kafka REST proxy on the EC2 client
+
+Now that you have set up the Kafka REST Proxy integration for your API, you need to set up the Kafka REST Proxy on your EC2 client machine.
+
+1. First, install the Confluent package for the Kafka REST Proxy on your EC2 client machine.
+`sudo wget https://packages.confluent.io/archive/7.2/confluent-7.2.0.tar.gz`
+`tar -xvzf confluent-7.2.0.tar.gz`
+
+2. Allow the REST proxy to perform IAM authentication to the MSK cluster by modifying the **kafka-rest.properties** file.
+
+You should now be able to see a confluent-7.2.0 directory on your EC2 instance. To configure the REST proxy to communicate with the desired MSK cluster, and to perform IAM authentication you first need to navigate to confluent-7.2.0/etc/kafka-rest. Inside here run the following command to modify the kafka-rest.properties file:
+
+`nano kafka-rest.properties`
+
+```python
+# Sets up TLS for encryption and SASL for authN.
+client.security.protocol = SASL_SSL
+
+# Identifies the SASL mechanism to use.
+client.sasl.mechanism = AWS_MSK_IAM
+
+# Binds SASL client implementation.
+client.sasl.jaas.config = software.amazon.msk.auth.iam.IAMLoginModule required awsRoleArn="Your Access Role";
+
+# Encapsulates constructing a SigV4 signature based on extracted credentials.
+# The SASL client bound by "sasl.jaas.config" invokes this class.
+client.sasl.client.callback.handler.class = software.amazon.msk.auth.iam.IAMClientCallbackHandler
+```
+
+3. Start the REST proxy on the EC2 client machine.
+
+Before sending messages to the API, in order to make sure they are consumed in MSK, we need to start our REST proxy. To do this, first navigate to the confluent-7.2.0/bin folder, and then run the following command:
+
+`./kafka-rest-start /home/ec2-user/confluent-7.2.0/etc/kafka-rest/kafka-rest.properties`
+
+### Task 3: Send data to the API
+
+Now, we proceed to send the data to the API, which in turn will send the data to the MSK Cluster using the plugin-connector pair previously created.
+
+1. Modify the **user_posting_emulation.py** to send data to your Kafka topics using your API Invoke URL. You should send data from the three tables to their corresponding Kafka topic.
+
+2. Check data is sent to the cluster by running a Kafka consumer (one per topic). If everything has been set up correctly, you should see messages being consumed.
+
+3. Check if data is getting stored in the S3 bucket. Notice the folder organization (e.g **topics/<your_UserId>.pin/partition=0/**) that your connector creates in the bucket. Make sure your database credentials are encoded in a separate, hidden **db_creds.yaml** file.
+
