@@ -21,7 +21,9 @@
     - [Task 1: Build a Kafka REST proxy integration method for the API](#task-1-build-a-kafka-rest-proxy-integration-method-for-the-api)
     - [Task 2: Set up the Kafka REST proxy on the EC2 client](#task-2-set-up-the-kafka-rest-proxy-on-the-ec2-client)
     - [Task 3: Send data to the API](#task-3-send-data-to-the-api)
-
+7. [Milestone 6: Batch Processing Databricks](#milestone-6-batch-processing-databricks)
+    - [Task 1: Set up your databricks account](#task-1-set-up-your-databricks-account)
+    - [Task 2: Mount a S3 bucket to databricks](#task-2-mount-a-s3-bucket-to-databricks)
 
 
 
@@ -275,3 +277,23 @@ Now, we proceed to send the data to the API, which in turn will send the data to
 
 3. Check if data is getting stored in the S3 bucket. Notice the folder organization (e.g **topics/<your_UserId>.pin/partition=0/**) that your connector creates in the bucket. Make sure your database credentials are encoded in a separate, hidden **db_creds.yaml** file.
 
+## Milestone 6: Batch Processing Databricks
+
+In this task, we proceed to set up a Databricks account and read data from AWS.
+
+### Task 1: Set up your databricks account
+
+In this task, you have to creat your Databricks account. To do it, you have to go to Databricks website and create your account.
+
+### Task 2: Mount a S3 bucket to databricks
+
+In order to clean and query your batch data, you will need to read this data from your S3 bucket into Databricks. To do this, you will need to mount the desired S3 bucket to the Databricks account. The Databricks account you have access to has already been granted full access to S3, so you will not need to create a new **Access Key** and **Secret Access Key** for Databricks. The credentials have already been uploaded to Databricks for you. You will only need to read in the data from the Delta table, located at **dbfs:/user/hive/warehouse/authentication_credentials**.
+
+When reading in the JSONs from S3, make sure to include the complete path to the **JSON** objects, as seen in your S3 bucket (e.g **topics/<your_UserId>.pin/partition=0/**).
+
+
+You should create three different DataFrames:
+
+- df_pin for the Pinterest post data
+- df_post for the Pinterest geolocation data
+- df_user for the Pinterest user data
