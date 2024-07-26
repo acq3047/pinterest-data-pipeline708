@@ -294,6 +294,6 @@ When reading in the JSONs from S3, make sure to include the complete path to the
 
 You should create three different DataFrames:
 
-- df_pin for the Pinterest post data
-- df_post for the Pinterest geolocation data
-- df_user for the Pinterest user data
+- **df_pin** for the Pinterest post data
+- **df_post** for the Pinterest geolocation data
+- **df_user** for the Pinterest user data
