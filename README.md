@@ -24,6 +24,19 @@
 7. [Milestone 6: Batch Processing Databricks](#milestone-6-batch-processing-databricks)
     - [Task 1: Set up your databricks account](#task-1-set-up-your-databricks-account)
     - [Task 2: Mount a S3 bucket to databricks](#task-2-mount-a-s3-bucket-to-databricks)
+8. [Milestone 7: Batch Processing: Spark on Databricks](#milestone-7-batch-processing-spark-on-databricks)
+    - [Task 1: Clean the DataFrame that contains information about pinterest posts](#task-1-clean-the-dataframe-that-contains-information-about-pinterest-posts)
+    - [Task 2: Clean the DataFrame that contains information about geolocation](#task-2-clean-the-dataframe-that-contains-information-about-geolocation)
+    - [Task 3:Clean the DataFrame that contains information about users](#task-3-clean-the-dataframe-that-contains-information-about-users)
+    - [Task 4: Find the most popular category in each country](#task-4-find-the-most-popular-category-in-each-country)
+    - [Task 5: Find which was the most popular category each year](#task-5-find-which-was-the-most-popular-category-each-year)
+    - [Task 6: Find the user with most followers in each country](#task-6-find-the-user-with-most-followers-in-each-country)
+    - [Task 7: Find the most popular category for different age groups](#task-7-find-the-most-popular-category-for-different-age-groups)
+    - [Task 8: Find the median follower count for different age group](#task-8-find-the-median-follower-count-for-different-age-group)
+    - [Task 9: Find how many users have joined each year](#task-9-find-how-many-users-have-joined-each-year)
+    - [Task 10: Find the median follower count of users based on their joining year](#task-10-find-the-median-follower-count-of-users-based-on-their-joining-year)
+    - [Task 11: Find the median follower count of users based on their joining year and age group](#task-11-find-the-median-follower-count-of-users-based-on-their-joining-year-and-age-group)
+
 
 
 
@@ -297,3 +310,142 @@ You should create three different DataFrames:
 - **df_pin** for the Pinterest post data
 - **df_post** for the Pinterest geolocation data
 - **df_user** for the Pinterest user data
+
+## Milestone 7: Batch Processing: Spark on Databricks
+
+In this milestone, we will explore how to perform data claning and computations using SPARK on Databricks.
+
+### Task 1: Clean the DataFrame that contains information about pinterest posts
+
+To clean the **df_pin** DataFrame you should perform the following transformations:
+
+Replace empty entries and entries with no relevant data in each column with **Nones**
+Perform the necessary transformations on the **follower_count** to ensure every entry is a number. Make sure the data type of this column is an **int**.
+Ensure that each column containing numeric data has a numeric data type
+Clean the data in the save_location column to include only the save location path
+Rename the index column to **ind**.
+Reorder the DataFrame columns to have the following column order:
+- **ind**
+- **unique_id**
+- **title**
+- **description**
+- **follower_count**
+- **poster_name**
+- **tag_list**
+- **is_image_or_video**
+- **image_src**
+- **save_location**
+- **category**
+
+### Task 2: Clean the DataFrame that contains information about geolocation
+
+To clean the df_geo DataFrame you should perform the following transformations:
+
+Create a new column **coordinates** that contains an array based on the **latitude** and **longitude** columns
+Drop the **latitude** and **longitude** columns from the DataFrame
+Convert the **timestamp** column from a string to a timestamp data type
+Reorder the DataFrame columns to have the following column order:
+- **ind**
+- **country**
+- **coordinates**
+- **timestamp**
+
+### Task 3: Clean the DataFrame that contains information about users
+
+To clean the **df_user** DataFrame you should perform the following transformations:
+
+Create a new column **user_name** that concatenates the information found in the **first_name** and **last_name** columns
+Drop the **first_name** and **last_name** columns from the DataFrame
+Convert the **date_joined** column from a string to a timestamp data type
+Reorder the DataFrame columns to have the following column order:
+- **ind**
+- **user_name**
+- **age**
+- **date_joined**
+
+### Task 4: Find the most popular category in each country
+
+Find the most popular Pinterest category people post to based on their country.
+
+Your query should return a DataFrame that contains the following columns:
+- **country**
+- **category**
+- **category_count**, a new column containing the desired query output
+
+### Task 5: Find which was the most popular category each year
+
+Find how many posts each category had between 2018 and 2022.
+
+Your query should return a DataFrame that contains the following columns:
+- **post_year**, a new column that contains only the year from the **timestamp** column
+- **category**
+- **category_count**, a new column containing the desired query output by using the same apprach as in **Task 5**
+
+### Task 6: Find the user with most followers in each country
+
+1. For each country find the user with the most followers.
+
+
+Your query should return a DataFrame that contains the following columns:
+- **country**
+- **poster_name**
+- **follower_count**
+
+2. Based on the above query, find the country with the user with most followers.
+
+
+Your query should return a DataFrame that contains the following columns:
+- **country**
+- **follower_count**
+
+This DataFrame should have only one entry.
+
+### Task 7: Find the most popular category for different age groups
+
+What is the most popular category people post to based on the following age groups:
+- 18-24
+- 25-35
+- 36-50
+- +50
+Your query should return a DataFrame that contains the following columns:
+- **age_group**, a new column based on the original age column
+- **category**
+- **category_count**, a new column containing the desired query output as in **Task 5**
+
+### Task 8: Find the median follower count for different age group
+
+What is the median follower count for users in the following age groups:
+- 18-24
+- 25-35
+- 36-50
+- +50
+
+Your query should return a DataFrame that contains the following columns:
+- **age_group**, a new column based on the original **age** column
+- **median_follower_count**, a new column containing the desired query output
+
+### Task 9: Find how many users have joined each year
+
+Find how many users have joined between 2015 and 2020.
+
+Your query should return a DataFrame that contains the following columns:
+- **post_year**, a new column that contains only the year from the **timestamp** column
+- **number_users_joined**, a new column containing the desired query output
+
+### Task 10: Find the median follower count of users based on their joining year
+
+Find the median follower count of users have joined between 2015 and 2020.
+
+Your query should return a DataFrame that contains the following columns:
+- **post_year**, a new column that contains only the year from the **timestamp** column
+- **median_follower_count**, a new column containing the desired query output
+
+### Task 11: Find the median follower count of users based on their joining year and age group
+
+Find the median follower count of users that have joined between 2015 and 2020, based on which age group they are part of.
+
+Your query should return a DataFrame that contains the following columns:
+- **age_group**, a new column based on the original **age** column
+- **post_year**, a new column that contains only the year from the **timestamp** column
+- **median_follower_count**, a new column containing the desired query output
+
