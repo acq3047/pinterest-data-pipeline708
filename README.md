@@ -36,6 +36,9 @@
     - [Task 9: Find how many users have joined each year](#task-9-find-how-many-users-have-joined-each-year)
     - [Task 10: Find the median follower count of users based on their joining year](#task-10-find-the-median-follower-count-of-users-based-on-their-joining-year)
     - [Task 11: Find the median follower count of users based on their joining year and age group](#task-11-find-the-median-follower-count-of-users-based-on-their-joining-year-and-age-group)
+9. [Milestone 8: Batch Processing: AWS MWAA](#milestone-8-batch-processing-aws-mwaa)
+    - [Task 1: Create and upload a DAG to a MWAA environment](#task-1-create-and-upload-a-dag-to-a-mwaa-environment)
+    - [Task 2: Trigger a DAG that runs a Databricks Notebook](#task-2-trigger-a-dag-that-runs-a-databricks-notebook)
 
 
 
@@ -449,3 +452,18 @@ Your query should return a DataFrame that contains the following columns:
 - **post_year**, a new column that contains only the year from the **timestamp** column
 - **median_follower_count**, a new column containing the desired query output
 
+## Milestone 8: Batch Processing: AWS MWAA
+
+In this task, you will proceed to orchestrate the Databricks Workloads on **AWS MWAA**
+
+### Task 1: Create and upload a DAG to a MWAA environment
+
+Your AWS account has been already been provided with access to a MWAA environment **Databricks-Airflow-env** and to its S3 bucket **mwaa-dags-bucket**. Thus, you will not be required to create an API token in Databricks to connect to your AWS account, to set up the MWAA-Databricks connection or to create the **requirements.txt** file.
+
+You will only need to create an Airflow DAG that will trigger a Databricks Notebook to be run on a specific schedule. This DAG should be uploaded to the **dags** folder in the **mwaa-dags-bucket**.
+
+Your AWS account has been granted permissions to upload and update the following file **<your_UserId_dag.py>** to the **mwaa-dags-bucket**. Make sure to give your DAG the correct name, otherwise you will run into permission errors. Be careful to also name the DAG inside the **<your_UserId_dag.py>** as such: **<your_UserId_dag>**. You should schedule the DAG to run daily.
+
+### Task 2: Trigger a DAG that runs a Databricks Notebook
+
+Manually trigger the DAG you have uploaded in the previous step and check it runs successfully.
