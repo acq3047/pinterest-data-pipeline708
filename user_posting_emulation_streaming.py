@@ -48,16 +48,16 @@ def send_to_stream(data):
     # pin
     pin_url = f"{PIN_API_INVOKE_URL}"
     print(pin_url)
-    headers = {
+    pin_headers = {
         "Content-Type": "application/json"
     }
     try:
-        response = requests.put(pin_url, headers=headers, data=json.dumps(data, default=json_serial))
-        if response.status_code != 200:
+        pin_response = requests.put(pin_url, headers=pin_headers, data=json.dumps(data, default=json_serial))
+        if pin_response.status_code != 200:
             # print(f"Failed to post to {topic}: {response.text}")
-            print(f"The status code is: {response.status_code}")
+            print(f"The status code is: {pin_response.status_code}")
         else:
-            print(f"The status code is: {response.status_code}")
+            print(f"The status code is: {pin_response.status_code}")
     except Exception as e:
         # print(f"Error posting to {topic}: {e}")
         print('Error has occured')
@@ -65,16 +65,16 @@ def send_to_stream(data):
     # geo
     geo_url = f"{GEO_API_INVOKE_URL}"
     print(geo_url)
-    headers = {
+    geo_headers = {
         "Content-Type": "application/json"
     }
     try:
-        response = requests.put(geo_url, headers=headers, data=json.dumps(data, default=json_serial))
-        if response.status_code != 200:
+        geo_response = requests.put(geo_url, headers=geo_headers, data=json.dumps(data, default=json_serial))
+        if geo_response.status_code != 200:
             # print(f"Failed to post to {topic}: {response.text}")
-            print(f"The status code is: {response.status_code}")
+            print(f"The status code is: {geo_response.status_code}")
         else:
-            print(f"The status code is: {response.status_code}")
+            print(f"The status code is: {geo_response.status_code}")
     except Exception as e:
         # print(f"Error posting to {topic}: {e}")
         print('Error has occured')
@@ -82,16 +82,16 @@ def send_to_stream(data):
     # user
     user_url = f"{USER_API_INVOKE_URL}"
     print(user_url)
-    headers = {
+    user_headers = {
         "Content-Type": "application/json"
     }
     try:
-        response = requests.put(user_url, headers=headers, data=json.dumps(data, default=json_serial))
-        if response.status_code != 200:
+        user_response = requests.put(user_url, headers=user_headers, data=json.dumps(data, default=json_serial))
+        if user_response.status_code != 200:
             # print(f"Failed to post to {topic}: {response.text}")
-            print(f"The status code is: {response.status_code}")
+            print(f"The status code is: {user_response.status_code}")
         else:
-            print(f"The status code is: {response.status_code}")
+            print(f"The status code is: {user_response.status_code}")
     except Exception as e:
         # print(f"Error posting to {topic}: {e}")
         print('Error has occured')
