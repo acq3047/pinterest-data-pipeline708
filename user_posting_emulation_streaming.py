@@ -49,7 +49,7 @@ def send_to_stream(data):
     pin_url = f"{PIN_API_INVOKE_URL}"
     print(pin_url)
     pin_headers = {
-        "Content-Type": "application/json"
+        "Content-Type": "application/x-amz-json-1.1"
     }
     try:
         pin_response = requests.put(pin_url, headers=pin_headers, data=json.dumps(data, default=json_serial))
@@ -66,7 +66,7 @@ def send_to_stream(data):
     geo_url = f"{GEO_API_INVOKE_URL}"
     print(geo_url)
     geo_headers = {
-        "Content-Type": "application/json"
+        "Content-Type": "application/x-amz-json-1.1"
     }
     try:
         geo_response = requests.put(geo_url, headers=geo_headers, data=json.dumps(data, default=json_serial))
@@ -83,7 +83,7 @@ def send_to_stream(data):
     user_url = f"{USER_API_INVOKE_URL}"
     print(user_url)
     user_headers = {
-        "Content-Type": "application/json"
+        "Content-Type": "application/x-amz-json-1.1"
     }
     try:
         user_response = requests.put(user_url, headers=user_headers, data=json.dumps(data, default=json_serial))
@@ -156,20 +156,20 @@ def run_infinite_post_data_loop():
             # print(f"Posted to pinterest_topic: {pin_result}")
 
         
-            headers = {'Content-Type': 'application/vnd.kafka.json.v2+json'}
+            headers = {'Content-Type': "application/json"}
             
             # Pin response
-            pin_response = requests.request("Put", "https://5tqlmnjg51.execute-api.us-east-1.amazonaws.com/dev/streams/streaming-0affd5f86743-pin/record", headers=headers, data=pin_playload)
+            pin_response = requests.request("PUT", "https://5tqlmnjg51.execute-api.us-east-1.amazonaws.com/dev/streams/streaming-0affd5f86743-pin/record", headers=headers, data=pin_playload)
             print('Printing the pin_response status code')
             print(pin_response.status_code)
 
             # Geo response
-            geo_response = requests.request("Put", "https://5tqlmnjg51.execute-api.us-east-1.amazonaws.com/dev/streams/streaming-0affd5f86743-geo/record", headers=headers, data=geo_playload)
+            geo_response = requests.request("PUT", "https://5tqlmnjg51.execute-api.us-east-1.amazonaws.com/dev/streams/streaming-0affd5f86743-geo/record", headers=headers, data=geo_playload)
             print('Printing the geo_response status code')
             print(geo_response.status_code)
 
             # User response
-            user_response = requests.request("Put", "https://5tqlmnjg51.execute-api.us-east-1.amazonaws.com/dev/streams/streaming-0affd5f86743-user/record", headers=headers, data=user_playload)
+            user_response = requests.request("PUT", "https://5tqlmnjg51.execute-api.us-east-1.amazonaws.com/dev/streams/streaming-0affd5f86743-user/record", headers=headers, data=user_playload)
             print('Printing the user_response status code')
             print(user_response.status_code)
 
