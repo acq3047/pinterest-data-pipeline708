@@ -34,7 +34,9 @@ API_URLS = {
     'GeoStream': 'https://us-east-1.console.aws.amazon.com/kinesis/home?region=us-east-1#/streams/details/streaming-0affd5f86743-geo',
     'PinStream': 'https://us-east-1.console.aws.amazon.com/kinesis/home?region=us-east-1#/streams/details/streaming-0affd5f86743-pin'
 }
-#API_INVOKE_URL = "https://us-east-1.console.aws.amazon.com/kinesis/home?region=us-east-1#/streams/details/streaming-0affd5f86743-pin"
+PIN_API_INVOKE_URL = "https://5tqlmnjg51.execute-api.us-east-1.amazonaws.com/dev/streams/streaming-0affd5f86743-pin/record"
+GEO_API_INVOKE_URL = "https://5tqlmnjg51.execute-api.us-east-1.amazonaws.com/dev/streams/streaming-0affd5f86743-geo/record"
+USER_API_INVOKE_URL = "https://5tqlmnjg51.execute-api.us-east-1.amazonaws.com/dev/streams/streaming-0affd5f86743-user/record"
 
 def json_serial(obj):
     """JSON serializer for objects not serializable by default json code"""
@@ -42,25 +44,57 @@ def json_serial(obj):
         return obj.isoformat()
     raise TypeError(f"Type {type(obj)} not serializable")
 
-def send_to_stream(api_url, data):
+def send_to_stream(data):
+    # pin
+    pin_url = f"{PIN_API_INVOKE_URL}"
+    print(pin_url)
     headers = {
-        "Content-Type": "application/x-amz-json-1.1",
-        "X-Amz-Target": "Kinesis_20131202.PutRecord"
-    }
-    payload = {
-        "StreamName": 'stream-name',
-        "Data": json.dumps(data, default=json_serial),
-        "PartitionKey": str(random.randint(0, 10000))
+        "Content-Type": "application/json"
     }
     try:
-        response = requests.post(api_url, headers=headers, data=json.dumps(payload))
+        response = requests.put(pin_url, headers=headers, data=json.dumps(data, default=json_serial))
         if response.status_code != 200:
-            print(f"Failed to send to stream {api_url}: {response.text}")
+            # print(f"Failed to post to {topic}: {response.text}")
+            print(f"The status code is: {response.status_code}")
         else:
-            print(f"Successfully sent to stream {api_url}")
+            print(f"The status code is: {response.status_code}")
     except Exception as e:
-        print(f"Error sending to stream {api_url}: {e}")
-
+        # print(f"Error posting to {topic}: {e}")
+        print('Error has occured')
+    
+    # geo
+    geo_url = f"{GEO_API_INVOKE_URL}"
+    print(geo_url)
+    headers = {
+        "Content-Type": "application/json"
+    }
+    try:
+        response = requests.put(geo_url, headers=headers, data=json.dumps(data, default=json_serial))
+        if response.status_code != 200:
+            # print(f"Failed to post to {topic}: {response.text}")
+            print(f"The status code is: {response.status_code}")
+        else:
+            print(f"The status code is: {response.status_code}")
+    except Exception as e:
+        # print(f"Error posting to {topic}: {e}")
+        print('Error has occured')
+    
+    # user
+    user_url = f"{USER_API_INVOKE_URL}"
+    print(user_url)
+    headers = {
+        "Content-Type": "application/json"
+    }
+    try:
+        response = requests.put(user_url, headers=headers, data=json.dumps(data, default=json_serial))
+        if response.status_code != 200:
+            # print(f"Failed to post to {topic}: {response.text}")
+            print(f"The status code is: {response.status_code}")
+        else:
+            print(f"The status code is: {response.status_code}")
+    except Exception as e:
+        # print(f"Error posting to {topic}: {e}")
+        print('Error has occured')
 
 def run_infinite_post_data_loop():
     while True:
@@ -73,66 +107,74 @@ def run_infinite_post_data_loop():
             pin_string = text(f"SELECT * FROM pinterest_data LIMIT {random_row}, 1")
             pin_selected_row = connection.execute(pin_string)
             
+        
+
             for row in pin_selected_row:
                 pin_result = dict(row._mapping)
+
+
 
             geo_string = text(f"SELECT * FROM geolocation_data LIMIT {random_row}, 1")
             geo_selected_row = connection.execute(geo_string)
             
             for row in geo_selected_row:
                 geo_result = dict(row._mapping)
+                # post_to_kafka(geo_result)
+                # print(f"Posted to geolocation_topic: {geo_result}")
+
 
             user_string = text(f"SELECT * FROM user_data LIMIT {random_row}, 1")
             user_selected_row = connection.execute(user_string)
             
             for row in user_selected_row:
                 user_result = dict(row._mapping)
+                # post_to_kafka(user_result)
+                # print(f"Posted to user_topic: {user_result}")
             
-            #print(pin_result)
-            #print(geo_result)
-            #print(user_result)
+            print(user_result)
+            # print(geo_result)
+            # print(user_result)
 
-            #pin_res = json.dumps({
-            #    "records": [
-            #        {
-            #        "value": pin_result
-            #        }
-            #    ]
-            #}, default=str)
-
-            #geo_res = json.dumps({
-            #    "records": [
-            #        {
-            #        "value": geo_result
-            #        }
-            #    ]
-            #}, default=str)
-
-            #user_res = json.dumps({
-            #    "records": [
-            #        {
-            #        "value": user_result
-            #        }
-            #    ]
-            #}, default=str)
+            pin_playload = json.dumps({
+                "StreamName": "streaming-0affd5f86743-pin",
+                "Data": pin_result,
+                        "PartitionKey": "partition-1"
+                        }, default=str)
+            
+            geo_playload = json.dumps({
+                "StreamName": "streaming-0affd5f86743-geo",
+                "Data": geo_result,
+                        "PartitionKey": "partition-1"
+                        }, default=str)
+            
+            user_playload = json.dumps({
+                "StreamName": "streaming-0affd5f86743-user",
+                "Data": user_result,
+                        "PartitionKey": "partition-1"
+                        }, default=str)
             # post_to_kafka( pin_result)
             # print(f"Posted to pinterest_topic: {pin_result}")
 
-            # Send data to respective API endpoints
-            send_to_stream(API_URLS['PinStream'], pin_result)
-            send_to_stream(API_URLS['GeoStream'], geo_result)  
-            send_to_stream(API_URLS['UserStream'], user_result)
-            #headers = {'Content-Type': 'application/vnd.kafka.json.v2+json'}
+        
+            headers = {'Content-Type': 'application/vnd.kafka.json.v2+json'}
             
-            #user_response = requests.request("PUT", "https://us-east-1.console.aws.amazon.com/kinesis/home?region=us-east-1#/streams/details/streaming-0affd5f86743-pin", headers=headers, data=pin_res)
-            #print(user_response.status_code)
+            # Pin response
+            pin_response = requests.request("Put", "https://5tqlmnjg51.execute-api.us-east-1.amazonaws.com/dev/streams/streaming-0affd5f86743-pin/record", headers=headers, data=pin_playload)
+            print('Printing the pin_response status code')
+            print(pin_response.status_code)
 
+            # Geo response
+            geo_response = requests.request("Put", "https://5tqlmnjg51.execute-api.us-east-1.amazonaws.com/dev/streams/streaming-0affd5f86743-geo/record", headers=headers, data=geo_playload)
+            print('Printing the geo_response status code')
+            print(geo_response.status_code)
+
+            # User response
+            user_response = requests.request("Put", "https://5tqlmnjg51.execute-api.us-east-1.amazonaws.com/dev/streams/streaming-0affd5f86743-user/record", headers=headers, data=user_playload)
+            print('Printing the user_response status code')
+            print(user_response.status_code)
 
 
 if __name__ == "__main__":
     run_infinite_post_data_loop()
     print('Working')
     
-    
-
-
