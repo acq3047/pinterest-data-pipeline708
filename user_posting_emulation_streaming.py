@@ -49,7 +49,7 @@ def send_to_stream(data):
     pin_url = f"{PIN_API_INVOKE_URL}"
     print(pin_url)
     pin_headers = {
-        "Content-Type": "application/x-amz-json-1.1"
+        "Content-Type": "application/json"
     }
     try:
         pin_response = requests.put(pin_url, headers=pin_headers, data=json.dumps(data, default=json_serial))
@@ -66,7 +66,7 @@ def send_to_stream(data):
     geo_url = f"{GEO_API_INVOKE_URL}"
     print(geo_url)
     geo_headers = {
-        "Content-Type": "application/x-amz-json-1.1"
+        "Content-Type": "application/json"
     }
     try:
         geo_response = requests.put(geo_url, headers=geo_headers, data=json.dumps(data, default=json_serial))
@@ -83,7 +83,7 @@ def send_to_stream(data):
     user_url = f"{USER_API_INVOKE_URL}"
     print(user_url)
     user_headers = {
-        "Content-Type": "application/x-amz-json-1.1"
+        "Content-Type": "application/json"
     }
     try:
         user_response = requests.put(user_url, headers=user_headers, data=json.dumps(data, default=json_serial))
