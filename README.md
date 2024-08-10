@@ -39,6 +39,13 @@
 9. [Milestone 8: Batch Processing: AWS MWAA](#milestone-8-batch-processing-aws-mwaa)
     - [Task 1: Create and upload a DAG to a MWAA environment](#task-1-create-and-upload-a-dag-to-a-mwaa-environment)
     - [Task 2: Trigger a DAG that runs a Databricks Notebook](#task-2-trigger-a-dag-that-runs-a-databricks-notebook)
+10. [Milestone 9: Stream Processing: AWS Kinesis](#milestone-9-stream-processing-aws-kinesis)
+    - [Task 1: Create data stream using Kinesis Data Stream](#task-1-create-data-stream-using-kinesis-data-stream)
+    - [Task 2: Configure an API with Kinesis proxy integration](#task-2-configure-an-api-with-kinesis-proxy-integration)
+    - [Task 3: Send data to the Kinesis streams](#task-3-send-data-to-the-kinesis-streams)
+    - [Task 4: Read data from Kinesis Streams in Databricks](#task-4-read-data-from-kinesis-streams-in-databricks)
+    - [Task 5: Transform Kinesis streams in Databricks](#task-5-transform-kinesis-streams-in-databricks)
+    - [Task 6: Write the streaming data to Delta Tables](#task-6-write-the-streaming-data-to-delta-tables)
 
 
 
@@ -467,3 +474,53 @@ Your AWS account has been granted permissions to upload and update the following
 ### Task 2: Trigger a DAG that runs a Databricks Notebook
 
 Manually trigger the DAG you have uploaded in the previous step and check it runs successfully.
+
+## Milestone 9: Stream Processing: AWS Kinesis
+
+The objective of this milestone is stream data through Kinesis and read it in Databricks
+
+### Task 1: Create data stream using Kinesis Data Stream
+
+Using Kinesis Data Streams create three data streams, one for each Pinterest table.
+
+Create and describe the following streams:
+- streaming-<your_UserId>-pin
+- streaming-<your_UserId>-geo
+- streaming-<your_UserId>-user
+
+Make sure you follow the correct nomenclature, otherwise you will run into permission errors when creating the streams.
+
+### Task 2: Configure an API with Kinesis proxy integration
+
+Configure your previously created REST API to allow it to invoke Kinesis actions. Your AWS account has been granted the necessary permissions to invoke Kinesis actions, so you will not need to create an IAM role for your API to access Kinesis.
+
+The access role you have been provided with has the following structure: **<your_UserId-kinesis-access-role>**. You can copy the ARN of this role from the IAM console, under Roles. This is the ARN you should be using when setting up the **Execution role** for the integration point of all the methods you will create.
+
+Your API should be able to invoke the following actions:
+- List streams in Kinesis
+- Create, describe and delete streams in Kinesis
+- Add records to streams in Kinesis
+
+### Task 3: Send data to the Kinesis streams
+
+Create a new script **user_posting_emulation_streaming.py**, that builds upon the initial ****user_posting_emulation.py** you have been provided with.
+
+In this script, you should send requests to your API, which adds one record at a time to the streams you have created. You should send data from the three Pinterest tables to their corresponding Kinesis stream.
+
+Make sure your database credentials are encoded in a separate, hidden **db_creds.yaml file**.
+
+### Task 4: Read data from Kinesis Streams in Databricks
+
+1. Create a new Notebook in Databricks and read in your credentials from the Delta table, located at **dbfs:/user/hive/warehouse/authentication_credentials**, to retrieve the **Access Key** and **Secret Access Key**. Follow the same process for this, as you have followed for your batch data.
+
+2. Run your preferred method to ingest data into Kinesis Data Streams. In the Kinesis console, check your data streams are receiving the data.
+
+3. Read the data from the three streams you have created in your Databricks Notebook.
+
+### Task 5: Transform Kinesis streams in Databricks
+
+Clean the streaming data in the same way you have previously cleaned the batch data.
+
+### Task 6: Write the streaming data to Delta Tables
+
+Once the streaming data has been cleaned, you should save each stream in a Delta Table. You should save the following tables: **<your_UserId>_pin_table**, **<your_UserId>_geo_table** and **<your_UserId>_user_table**.
