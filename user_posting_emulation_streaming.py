@@ -29,11 +29,6 @@ class AWSDBConnector:
 
 new_connector = AWSDBConnector()
 
-API_URLS = {
-    'UserStream': 'https://us-east-1.console.aws.amazon.com/kinesis/home?region=us-east-1#/streams/details/streaming-0affd5f86743-user',
-    'GeoStream': 'https://us-east-1.console.aws.amazon.com/kinesis/home?region=us-east-1#/streams/details/streaming-0affd5f86743-geo',
-    'PinStream': 'https://us-east-1.console.aws.amazon.com/kinesis/home?region=us-east-1#/streams/details/streaming-0affd5f86743-pin'
-}
 PIN_API_INVOKE_URL = "https://5tqlmnjg51.execute-api.us-east-1.amazonaws.com/dev/streams/streaming-0affd5f86743-pin/record"
 GEO_API_INVOKE_URL = "https://5tqlmnjg51.execute-api.us-east-1.amazonaws.com/dev/streams/streaming-0affd5f86743-geo/record"
 USER_API_INVOKE_URL = "https://5tqlmnjg51.execute-api.us-east-1.amazonaws.com/dev/streams/streaming-0affd5f86743-user/record"
