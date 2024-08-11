@@ -46,7 +46,8 @@
     - [Task 4: Read data from Kinesis Streams in Databricks](#task-4-read-data-from-kinesis-streams-in-databricks)
     - [Task 5: Transform Kinesis streams in Databricks](#task-5-transform-kinesis-streams-in-databricks)
     - [Task 6: Write the streaming data to Delta Tables](#task-6-write-the-streaming-data-to-delta-tables)
-
+11. [Document your project](#document-your-project)
+12. [License](#license)
 
 
 
@@ -77,12 +78,37 @@ At the same time, we have to set up the AWS cloud. To do it, we have to hit the 
 In this section, we will outline the necessary instructions for running the project, focusing on the specific version of Python required in this project.
 
 ***Python version***
-- Python version: Python 3.7 or higher
+![All text](https://img.shields.io/badge/Python-FFD43B?style=for-the-badge&logo=python&logoColor=blue)
+- ![All text](https://img.shields.io/badge/Python%20version%20-%203.7%20or%20higher%20-%20blue)
+
+    ***Essential libraries***
+    - **boto3**: ![All text](https://img.shields.io/pypi/pyversions/boto3)
+    - **requests**: ![All text](https://img.shields.io/pypi/pyversions/requests)
+    - **sqlalchemy**: ![All text](https://img.shields.io/pypi/pyversions/sqlalchemy)
+    - **datetime**: ![All text](https://img.shields.io/pypi/pyversions/datetime)
+
 
 ***AWS Services***
+![All text](https://img.shields.io/badge/Amazon_AWS-FF9900?style=for-the-badge&logo=amazonaws&logoColor=white)
 - IAM 
 - EC2
 - MSK
+- Kinesis
+- API Gateway
+- MWAA
+
+***Databricks Platform***
+![All text](https://img.shields.io/badge/Databricks-FF3621?style=for-the-badge&logo=Databricks&logoColor=white)
+
+***Apache Kafka***
+![All text](https://img.shields.io/badge/Apache_Kafka-231F20?style=for-the-badge&logo=apache-kafka&logoColor=white)
+
+***Apache Spark***
+![All text](https://img.shields.io/badge/Apache_Spark-FFFFFF?style=for-the-badge&logo=apachespark&logoColor=#E35A16)
+
+***PostgreSQL Database***
+![All text](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
+
 
 ## Milestone 2: Get Started
 
@@ -524,3 +550,17 @@ Clean the streaming data in the same way you have previously cleaned the batch d
 ### Task 6: Write the streaming data to Delta Tables
 
 Once the streaming data has been cleaned, you should save each stream in a Delta Table. You should save the following tables: **<your_UserId>_pin_table**, **<your_UserId>_geo_table** and **<your_UserId>_user_table**.
+
+## Document your project
+
+In the subsequent section, we will address the procedure for updating your Readme file locally and subsequently pushing the modifications to your GitHub repository. It is essential to document your progress diligently following the completion of each milestone. This entails providing a comprehensive description of the milestones, outlining the completed tasks, and embedding the code developed for each task. Finally, you must stage and push the changes to your GitHub repository.
+
+```python
+git add README.md
+git commit -m "Your commit message"
+git push
+```
+
+## License
+
+When this project's repository was initially established, it was deliberately left unlicensed. This decision allows users to utilize, adapt, and distribute the code without encountering any constraints or limitations.
