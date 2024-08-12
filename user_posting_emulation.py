@@ -14,7 +14,15 @@ random.seed(100)
 
 class AWSDBConnector:
 
+    """
+    This class is designed to establish a connection to an AWS-hosted MySQL database using SQLAlchemy.
+    """
+
     def __init__(self):
+
+        """
+        The database credential neccesary to connect to the database
+        """
 
         self.HOST = "pinterestdbreadonly.cq2e8zno855e.eu-west-1.rds.amazonaws.com"
         self.USER = 'project_user'
@@ -23,6 +31,11 @@ class AWSDBConnector:
         self.PORT = 3306
         
     def create_db_connector(self):
+
+        """
+        Creates and returns a SQLAlchemy engine that connects to the MySQL database using the credentials and connection details provided.
+        """
+
         engine = sqlalchemy.create_engine(f"mysql+pymysql://{self.USER}:{self.PASSWORD}@{self.HOST}:{self.PORT}/{self.DATABASE}?charset=utf8mb4")
         return engine
 
@@ -30,15 +43,23 @@ class AWSDBConnector:
 new_connector = AWSDBConnector()
 
 # Replace with your actual API Invoke URL
-API_INVOKE_URL = "https://5tqlmnjg51.execute-api.us-east-1.amazonaws.com/dev/topics/0affd5f86743.pin"
+API_INVOKE_URL = "https://5tqlmnjg51.execute-api.us-east-1.amazonaws.com/dev/topics/0affd5f86743.user"
 
 def json_serial(obj):
+
     """JSON serializer for objects not serializable by default json code"""
+
     if isinstance(obj, datetime):
         return obj.isoformat()
     raise TypeError(f"Type {type(obj)} not serializable")
 
 def post_to_kafka(data):
+
+    """
+    Posts data to a specified Kafka topic through an API endpoint.
+    Usage: Sends JSON data to the Kafka topic. It prints status codes and errors if the post fails.
+    """
+
     url = f"{API_INVOKE_URL}"
     print(url)
     headers = {
@@ -56,6 +77,18 @@ def post_to_kafka(data):
         print('Error has occured')
 
 def run_infinite_post_data_loop():
+
+    """
+    This function, continuously fetches random rows of data from three different database tables and posts the results to Kafka.
+    Details: 
+        - Loop: Runs indefinitely, fetching data at random intervals (between 0 and 2 seconds).
+        - Database Queries:
+            1. Queries the pinterest_data, geolocation_data, and user_data tables for random rows.
+            2. Converts each result row to a dictionary.
+        - Posting Data: Currently commented out, but intended to post the results to Kafka topics using the post_to_kafka function.
+        - Debugging: Prints the results and status codes for monitoring.
+    """
+    
     while True:
         sleep(random.randrange(0, 2))
         random_row = random.randint(0, 11000)
@@ -90,14 +123,14 @@ def run_infinite_post_data_loop():
                 # post_to_kafka(user_result)
                 # print(f"Posted to user_topic: {user_result}")
             
-            print(pin_result)
+            print(user_result)
             # print(geo_result)
             # print(user_result)
 
-            pin_res = json.dumps({
+            user_res = json.dumps({
                 "records": [
                     {
-                    "value": pin_result
+                    "value": user_result
                     }
                 ]
             }, default=str)
@@ -107,8 +140,8 @@ def run_infinite_post_data_loop():
         
             headers = {'Content-Type': 'application/vnd.kafka.json.v2+json'}
             
-            pin_response = requests.request("POST", "https://5tqlmnjg51.execute-api.us-east-1.amazonaws.com/dev/topics/0affd5f86743.pin", headers=headers, data=pin_res)
-            print(pin_response.status_code)
+            user_response = requests.request("POST", "https://5tqlmnjg51.execute-api.us-east-1.amazonaws.com/dev/topics/0affd5f86743.user", headers=headers, data=user_res)
+            print(user_response.status_code)
 
 
 if __name__ == "__main__":
