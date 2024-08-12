@@ -14,7 +14,15 @@ random.seed(100)
 
 class AWSDBConnector:
 
+    """
+    This class is designed to establish a connection to a MySQL database hosted on AWS RDS.
+    """
+
     def __init__(self):
+
+        """
+        The database credentials neccesary to connect to the database
+        """
 
         self.HOST = "pinterestdbreadonly.cq2e8zno855e.eu-west-1.rds.amazonaws.com"
         self.USER = 'project_user'
@@ -23,6 +31,11 @@ class AWSDBConnector:
         self.PORT = 3306
         
     def create_db_connector(self):
+
+        """
+        Creates and returns a SQLAlchemy engine to connect to the MySQL database using the provided credentials and connection details.
+        """
+
         engine = sqlalchemy.create_engine(f"mysql+pymysql://{self.USER}:{self.PASSWORD}@{self.HOST}:{self.PORT}/{self.DATABASE}?charset=utf8mb4")
         return engine
 
@@ -40,6 +53,19 @@ def json_serial(obj):
     raise TypeError(f"Type {type(obj)} not serializable")
 
 def send_to_stream(data):
+
+    """
+    Purpose: Sends data to three different streaming APIs via HTTP PUT requests.
+    Details: 
+        - Pin Data: Sends data to a specific API endpoint for pin data using PIN_API_INVOKE_URL.
+        - Geo Data: Sends data to a specific API endpoint for geo data using GEO_API_INVOKE_URL.
+        - User Data: Sends data to a specific API endpoint for user data using USER_API_INVOKE_URL.
+    Headers and Payload:
+        - Headers: Set to "Content-Type": "application/json".
+        - Payload: Data is converted to JSON format with the stream name and partition key included.
+    Error Handling: Catches exceptions and prints error messages if the request fails.
+    """
+
     # pin
     pin_url = f"{PIN_API_INVOKE_URL}"
     print(pin_url)
@@ -92,6 +118,20 @@ def send_to_stream(data):
         print('Error has occured')
 
 def run_infinite_post_data_loop():
+
+    """
+    Purpose: Continuously fetches random rows of data from a MySQL database and sends the data to the respective streaming APIs.
+    Details:
+        - Loop: Runs indefinitely, fetching data at random intervals (between 0 and 2 seconds).
+        - Database Queries:
+            1. Queries the pinterest_data, geolocation_data, and user_data tables for random rows.
+            2. Converts each result row to a dictionary.
+        Data Posting:
+            1. Payload Preparation: Creates JSON payloads for pin, geo, and user data.
+            2. API Requests: Sends the prepared payloads to the appropriate streaming APIs using HTTP PUT requests.
+            3. Response Handling: Prints the status codes of the responses for monitoring.
+    """
+    
     while True:
         sleep(random.randrange(0, 2))
         random_row = random.randint(0, 11000)
